@@ -12,7 +12,7 @@ contract CrazyPee is ERC721URIStorage, Admin {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    constructor() ERC721("MyNFT", "NFT") {}
+    constructor() ERC721("CrazyPee", "CYP") {}
 
     function mintNFT(address recipient, string memory tokenURI) public isAdmin() returns (uint256) {
         _tokenIds.increment();
