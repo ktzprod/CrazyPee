@@ -14,7 +14,7 @@ contract CrazyPee is ERC721URIStorage, Admin {
 
     constructor() ERC721("CrazyPee", "CYP") {}
 
-    function mintNFT(address recipient, string memory tokenURI) public isAdmin() returns (uint256) {
+    function mintNFT(address recipient, string memory tokenURI) external isAdmin() returns (uint256) {
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
