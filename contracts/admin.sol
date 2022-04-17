@@ -2,9 +2,9 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-import "./owner.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Admin is Owner {
+contract Admin is Ownable {
 
     mapping (address => bool) private admins;
 
@@ -20,12 +20,12 @@ contract Admin is Owner {
         _;
     }
 
-    function addNewAdmin(address _addr) external isOwner() {
+    function addNewAdmin(address _addr) external onlyOwner() {
         emit NewAdmin(_addr);
         admins[_addr] = true;
     }
 
-    function revokeFromAdmins(address _addr) external isOwner() {
+    function revokeFromAdmins(address _addr) external onlyOwner() {
         emit RevokedAdmin(_addr);
         admins[_addr] = false;
     }
