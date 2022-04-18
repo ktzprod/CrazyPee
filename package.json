@@ -2,6 +2,9 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",
     "dotenv": "^16.0.0",
+    "files-from-path": "^0.2.6",
+    "mime": "^3.0.0",
+    "nft.storage": "^6.2.0",
     "web3": "^1.7.3",
     "yargs": "^17.4.1"
   },
