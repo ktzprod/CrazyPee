@@ -1,4 +1,5 @@
-require('dotenv').config({path: __dirname+"/.."});
+require('dotenv').config();
+
 const web3 = require('web3');
 const web3Provider = new web3()
 const contract = require("../contracts/artifacts/CrazyPee.json")
