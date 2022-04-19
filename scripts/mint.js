@@ -1,45 +1,65 @@
 require('dotenv').config();
 
-const web3 = require('web3');
-const web3Provider = new web3()
+const { createAlchemyWeb3 } = require("@alch/alchemy-web3")
+const web3 = createAlchemyWeb3(process.env.DAPP_API_URL)
 const contract = require("../contracts/artifacts/CrazyPee.json")
-const crazyPee = new web3Provider.eth.Contract(contract.abi, process.env.CONTRACT_ADDRESS)
+const crazyPee = new web3.eth.Contract(contract.abi, process.env.CONTRACT_ADDRESS)
+var currentNonce = null;
 
 async function mintNFT(owner, tokenURI) {
-    const nonce = await web3Provider.eth.getTransactionCount(process.env.PUBLIC_KEY, "latest") //get latest nonce
+    var nonce = await web3.eth.getTransactionCount(process.env.PUBLIC_KEY, "latest") //get latest nonce
+    var gasPrice = await web3.eth.getGasPrice()
+
+    if (!currentNonce) {
+        currentNonce = nonce;
+    } else if (currentNonce >= nonce) {
+        currentNonce += 1;
+    } else {
+        currentNonce = nonce;
+    }
 
     //the transaction
     const tx = {
         from: process.env.PUBLIC_KEY,
-        to: contractAddress,
-        nonce: nonce,
-        gas: 500000,
+        to: process.env.CONTRACT_ADDRESS,
+        nonce: currentNonce,
+        gas: web3.utils.toWei("0.1", "ether"),
         data: crazyPee.methods.mintNFT(owner, tokenURI).encodeABI(),
     }
 
-    web3Provider.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY)
-        .then((signedTx) => {
-            web3.eth.sendSignedTransaction(
-                signedTx.rawTransaction,
-                function (err, hash) {
-                if (!err) {
-                    console.log(
-                    "The hash of your transaction is: ",
-                    hash,
-                    "\nCheck etherscan for the status of your transaction!"
-                    )
-                } else {
-                    console.log(
-                    "Something went wrong when submitting your transaction:",
-                    err
-                    )
-                }
-                }
-            )
-        })
-        .catch((err) => {
+    tx.gas = await web3.eth.estimateGas(tx)
+
+    web3.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY, function(err, signedTx) {
+        if (err) {
             console.log("Promise failed: ", err)
-        })
+            return
+        }
+
+        web3.eth.sendSignedTransaction(
+            signedTx.rawTransaction,
+            function (err, hash) {
+
+                if (err) {
+                    console.log("Something went wrong when submitting your transaction:", err)
+                    return
+                }
+
+                console.log(
+                "The hash of your transaction is: ",
+                hash,
+                "\nCheck etherscan for the status of your transaction!"
+                )
+
+                web3.eth.getTransactionReceipt(hash, function(err, receipt) {
+                    if (err) {
+                        console.log("Something went wrong with the receipt:", err)
+                    } else {
+                        console.log("Transaction receipt:", receipt)
+                    }
+                })
+            }
+        )
+    })
 }
 
 module.exports = {

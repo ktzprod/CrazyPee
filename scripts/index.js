@@ -41,7 +41,7 @@ async function main(argv)
 
         console.log('NFT data stored!')
         console.log('Metadata URI: ', metadata.url)
-        minter.mintNFT(process.env.PUBLIC_API, metadata.url)
+        await minter.mintNFT(process.env.PUBLIC_KEY, metadata.url)
     }
 }
 
