@@ -29,7 +29,7 @@ async function mintNFT(owner, tokenURI) {
 
     tx.gas = await web3.eth.estimateGas(tx)
 
-    web3.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY, function(err, signedTx) {
+    web3.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY, function(err, signedTx) {q
         if (err) {
             console.log("Promise failed: ", err)
             return
@@ -49,14 +49,6 @@ async function mintNFT(owner, tokenURI) {
                 hash,
                 "\nCheck etherscan for the status of your transaction!"
                 )
-
-                web3.eth.getTransactionReceipt(hash, function(err, receipt) {
-                    if (err) {
-                        console.log("Something went wrong with the receipt:", err)
-                    } else {
-                        console.log("Transaction receipt:", receipt)
-                    }
-                })
             }
         )
     })
