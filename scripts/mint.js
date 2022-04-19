@@ -8,7 +8,6 @@ var currentNonce = null;
 
 async function mintNFT(owner, tokenURI) {
     var nonce = await web3.eth.getTransactionCount(process.env.PUBLIC_KEY, "latest") //get latest nonce
-    var gasPrice = await web3.eth.getGasPrice()
 
     if (!currentNonce) {
         currentNonce = nonce;
