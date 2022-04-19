@@ -28,7 +28,7 @@ async function mintNFT(owner, tokenURI) {
 
     tx.gas = await web3.eth.estimateGas(tx)
 
-    web3.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY, function(err, signedTx) {q
+    web3.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY, function(err, signedTx) {
         if (err) {
             console.log("Promise failed: ", err)
             return
