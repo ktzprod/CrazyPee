@@ -8,6 +8,7 @@ const path = require('path')
 const minter = require('./mint.js')
 
 const API_KEY = process.env.NFT_STORAGE_API_KEY
+const store = new storage.NFTStorage({ token: API_KEY })
 
 /**
   * A helper to read a file from a location on disk and return a File object.
@@ -22,26 +23,27 @@ const API_KEY = process.env.NFT_STORAGE_API_KEY
     return new storage.File([content], path.basename(filePath), { type })
 }
 
-async function main(argv)
+async function mintFile(filepath, address)
 {
-    const folder = argv.folder
+    const image = await fileFromPath(filepath)
+    const metadata = await store.store({
+        image: image,
+        name: "CrazyPee #" + path.parse(filepath).name,
+        description: "CrazyPee is a promising collection with low budget",
+        properties: {
+            authors: [{ name: "Camille Hoarau" }],
+        }
+    })
+
+    console.log('Metadata URI: ', metadata.url)
+    minter.mintNFT(address, metadata.url)
+}
+
+async function mintFolder(folder, address)
+{
     const files = fs.readdirSync(folder)
-    const store = new storage.NFTStorage({ token: API_KEY })
-
     for (let i in files) {
-        const image = await fileFromPath(path.join(folder, files[i]))
-        const metadata = await store.store({
-            image: image,
-            name: "CrazyPee",
-            description: "CrazyPee is a promising collection with low budget",
-            properties: {
-                authors: [{ name: "Camille Hoarau" }],
-            }
-        })
-
-        console.log('NFT data stored!')
-        console.log('Metadata URI: ', metadata.url)
-        await minter.mintNFT(process.env.PUBLIC_KEY, metadata.url)
+        await mintFile(path.join(folder, files[i]), address)
     }
 }
 
@@ -54,13 +56,25 @@ yargs.command({
     builder: {
         folder: {
             describe: 'The folder that contains the images and potential metadata',
-            demandOption: true,  // Required
             type: 'string'  
         },
+        file: {
+            describe: 'The file to be mint',
+            type: 'string'
+        },
+        to: {
+            describe: 'The wallet adress that receive the NFT',
+            default: process.env.PUBLIC_KEY,
+            type: 'string'
+        }
     },
     // Function for your command
     handler(argv) {
-        main(argv)
+        if (argv.folder) {
+            mintFolder(argv.folder, argv.to)
+        } else if (argv.file) {
+            mintFile(argv.file, argv.to)
+        }
     }
 })
 .help()
