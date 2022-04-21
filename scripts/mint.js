@@ -1,6 +1,7 @@
 require('dotenv').config();
 
-const { createAlchemyWeb3 } = require("@alch/alchemy-web3")
+const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
+const { ethers } = require('hardhat');
 const web3 = createAlchemyWeb3(process.env.DAPP_API_URL)
 const contract = require("../artifacts/contracts/CrazyPee.sol/CrazyPee.json")
 const crazyPee = new web3.eth.Contract(contract.abi, process.env.CONTRACT_ADDRESS)
@@ -52,7 +53,7 @@ async function mintNFT(owner, tokenURI) {
         )
     })
 
-    receipt = await web3.eth.getTransactionReceipt(signedTx.transactionHash)
+    const receipt = await ethers.provider.waitForTransaction(signedTx.transactionHash)
     console.log(receipt)
 }
 

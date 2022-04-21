@@ -5,6 +5,10 @@ async function main() {
     const crazyPeeContract = await CrazyPee.deploy()
     await crazyPeeContract.deployed()
     console.log("Contract deployed to address:", crazyPeeContract.address)
+    const txHash = crazyPeeContract.deployTransaction.hash
+    const txReceipt = await ethers.provider.waitForTransaction(txHash)
+    const contractAddress = txReceipt.contractAddress
+    console.log("Contract deployed to address:", contractAddress)
 }
 
 main()
