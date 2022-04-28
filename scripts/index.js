@@ -23,18 +23,27 @@ const store = new storage.NFTStorage({ token: API_KEY })
     return new storage.File([content], path.basename(filePath), { type })
 }
 
+// extension should include the dot, for example '.html'
+function changeExtension(file, extension) {
+    const basename = path.basename(file, path.extname(file))
+    return path.join(path.dirname(file), basename + extension)
+}
+
 async function mintFile(filepath, address)
 {
+    const metadata_filepath = changeExtension(filepath, ".json")
+    const data = await fs.promises.readFile(metadata_filepath);
+    const image_metadata = JSON.parse(data);
+
     const image = await fileFromPath(filepath)
     const metadata = await store.store({
         image: image,
         name: "CrazyPee #" + path.parse(filepath).name,
-        description: "CrazyPee is a promising collection with low budget",
-        properties: {
-            authors: [{ name: "Camille Hoarau" }],
-        }
+        description: "CrazyPee is all about friendship",
+        attributes: image_metadata.traits,
     })
 
+    console.log(metadata)
     console.log('Metadata URI: ', metadata.url)
     minter.mintNFT(address, metadata.url)
 }
