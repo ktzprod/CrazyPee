@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 
 const minter = require('./mint.js')
+const burner = require('./burn.js')
 
 const API_KEY = process.env.NFT_STORAGE_API_KEY
 const store = new storage.NFTStorage({ token: API_KEY })
@@ -52,11 +53,15 @@ async function mintFolder(folder, address)
 {
     const files = fs.readdirSync(folder)
     for (let i in files) {
+        if (path.extname(files[i]) != ".jpg") {
+            continue
+        }
         await mintFile(path.join(folder, files[i]), address)
     }
 }
 
 const yargs = require('yargs');
+const { burnNFT } = require('./burn.js');
 
 // Create add command
 yargs.command({
@@ -84,6 +89,19 @@ yargs.command({
         } else if (argv.file) {
             mintFile(argv.file, argv.to)
         }
+    }
+}).command({
+    command: 'burn',
+    describe: 'Burn the given tokenID',
+    builder: {
+        id: {
+            describe: 'The ID of the NFT to be burned',
+            type: 'integer'
+        },
+    },
+    // Function for your command
+    handler(argv) {
+        burner.burnNFT(process.env.PUBLIC_KEY, argv.id)
     }
 })
 .help()

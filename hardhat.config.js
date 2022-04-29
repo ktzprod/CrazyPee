@@ -13,10 +13,15 @@ module.exports = {
          url: DAPP_API_URL,
          accounts: [`0x${PRIVATE_KEY}`]
       },
+      matic: {
+         url: "https://polygon-mainnet.g.alchemy.com/v2/jKOnQGycw5aO268DyCBZgLMuA9jJglwz",
+         accounts: [`0x${PRIVATE_KEY}`],
+         gasPrice: 35000000000
+      },
       matic_testnet: {
          url: "https://polygon-mumbai.g.alchemy.com/v2/dn_rcbqKHR2gaTtxg9cUJS27DCQEGnLW",
          accounts: [`0x${PRIVATE_KEY}`],
-         gasPrice: 8000000000
+         gasPrice: 10000000000
       }
    },
 }
