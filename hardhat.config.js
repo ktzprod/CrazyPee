@@ -19,7 +19,7 @@ module.exports = {
          gasPrice: 35000000000
       },
       matic_testnet: {
-         url: "https://polygon-mumbai.g.alchemy.com/v2/dn_rcbqKHR2gaTtxg9cUJS27DCQEGnLW",
+         url: "https://polygon-mumbai.g.alchemy.com/v2/rAh-1vqsGZCfsfPXChYKCRW2zMGleucf",
          accounts: [`0x${PRIVATE_KEY}`],
          gasPrice: 10000000000
       }
