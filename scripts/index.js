@@ -5,8 +5,7 @@ const mime = require('mime')
 const fs = require('fs')
 const path = require('path')
 
-const minter = require('./mint.js')
-const burner = require('./burn.js')
+const transactions = require('./transaction.js')
 
 const API_KEY = process.env.NFT_STORAGE_API_KEY
 const store = new storage.NFTStorage({ token: API_KEY })
@@ -46,7 +45,7 @@ async function mintFile(filepath, address)
 
     console.log(metadata)
     console.log('Metadata URI: ', metadata.url)
-    minter.mintNFT(address, metadata.url)
+    transactions.mintNFT(address, metadata.url)
 }
 
 async function mintFolder(folder, address)
@@ -61,7 +60,6 @@ async function mintFolder(folder, address)
 }
 
 const yargs = require('yargs');
-const { burnNFT } = require('./burn.js');
 
 // Create add command
 yargs.command({
@@ -101,7 +99,7 @@ yargs.command({
     },
     // Function for your command
     handler(argv) {
-        burner.burnNFT(process.env.PUBLIC_KEY, argv.id)
+        transactions.burnNFT(process.env.PUBLIC_KEY, argv.id)
     }
 })
 .help()

@@ -3,6 +3,8 @@ require('dotenv').config();
 const { ethers } = require('hardhat');
 const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
 const web3 = createAlchemyWeb3(process.env.DAPP_API_URL)
+const contract = require("../artifacts/contracts/CrazyPee.sol/CrazyPee.json")
+const crazyPee = new web3.eth.Contract(contract.abi, process.env.CONTRACT_ADDRESS)
 var currentNonce = null;
 
 async function sendTransaction(data) {
@@ -55,6 +57,26 @@ async function sendTransaction(data) {
     console.log(receipt)
 }
 
+async function mintNFT(owner, tokenURI) {
+    await sendTransaction(crazyPee.methods.mintNFT(owner, tokenURI).encodeABI())
+}
+
+async function burnNFT(owner, tokenID) {
+    try{
+        const real_owner = await crazyPee.methods.ownerOf(tokenID).call()
+        if (real_owner != owner) {
+            return
+        }
+
+        await trx.sendTransaction(crazyPee.methods.safeTransferFrom(owner, "0x000000000000000000000000000000000000dEaD", tokenID).encodeABI())
+    } catch {
+        console.log("Failed to burn tokenID: ", tokenID)
+    }
+
+    setTimeout(function(){}, 2000)
+}
+
 module.exports = {
-    sendTransaction,
+    mintNFT,
+    burnNFT
 }
